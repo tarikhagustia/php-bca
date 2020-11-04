@@ -19,10 +19,10 @@ Jika merasa terbantu dengan adanya library ini, jangan lupa untuk kasih STAR unt
 - [x] PHP 5.4.x
 - [x] PHP 5.5.x
 - [x] PHP 5.6.x
-- [x] PHP HHVM
 - [x] PHP 7.0.x
 - [x] PHP 7.1.x
-- [ ] PHP 7.2.x
+- [x] PHP 7.2.x
+- [ ] PHP 7.3.x
 
 Untuk lebih detail silahkan kunjungi [PHP BCA TravisCI](https://travis-ci.org/odenktools/php-bca)
 
@@ -131,6 +131,41 @@ Sebelum masuk ke tahap ```LOGIN``` pastikan seluruh kebutuhan seperti ```CORP_ID
     $bca = new \Bca\BcaHttp($corp_id, $client_key, $client_secret, $apikey, $secret, $options);
 ```
 
+Menggunakan custom **Curl Options**
+
+```php
+    $options = array(
+        'curl_options'  => array(
+            CURLOPT_SSL_VERIFYHOST => 0,
+            CURLOPT_SSLVERSION => 6,
+            CURLOPT_SSL_VERIFYPEER => false,
+            CURLOPT_TIMEOUT => 60
+        ),
+        'scheme'        => 'https',
+        'port'          => 443,
+        'host'          => 'sandbox.bca.co.id',
+        'timezone'      => 'Asia/Jakarta',
+        'timeout'       => 30,
+        'debug'         => true,
+        'development'   => true
+    );
+
+    // Setting default timezone Anda
+    \Bca\BcaHttp::setTimeZone('Asia/Jakarta');
+
+    // ATAU
+
+    // \Bca\BcaHttp::setTimeZone('Asia/Singapore');
+
+    $corp_id = "BCAAPI2016";
+    $client_key = "NILAI-CLIENT-KEY-ANDA";
+    $client_secret = "NILAI-CLIENT-SECRET-ANDA";
+    $apikey = "NILAI-APIKEY-ANDA";
+    $secret = "SECRETKEY-ANDA";
+
+    $bca = new \Bca\BcaHttp($corp_id, $client_key, $client_secret, $apikey, $secret, $options);
+```
+
 ### LOGIN
 
 ```php
@@ -168,7 +203,7 @@ Pastikan anda mendapatkan nilai ```TOKEN``` dan ```TOKEN``` tersebut masih berla
     echo json_encode($response);
 ```
 
-### FUND TRANSFER
+### FUND TRANSFER (UPDATED)
 
 Pastikan anda mendapatkan nilai ```TOKEN``` dan ```TOKEN``` tersebut masih berlaku (Tidak Expired).
 
@@ -194,6 +229,9 @@ Pastikan anda mendapatkan nilai ```TOKEN``` dan ```TOKEN``` tersebut masih berla
 
     $remark2 = 'Online Transfer Using Odenktools BCA';
 
+    // value hanya support idr dan usd
+    $mataUang = 'idr';
+
     $response = $bca->fundTransfers($token, 
                         $amount,
                         $nomorakun,
@@ -201,7 +239,8 @@ Pastikan anda mendapatkan nilai ```TOKEN``` dan ```TOKEN``` tersebut masih berla
                         $nomorPO,
                         $remark1,
                         $remark2,
-                        $nomorTransaksiID);
+                        $nomorTransaksiID,
+                        $mataUang);
 
     // Cek hasil response berhasil atau tidak
     echo json_encode($response);
@@ -315,11 +354,16 @@ Untuk melakukan testing lakukan ```command``` berikut ini
 composer run-script test
 ```
 
+Atau menggunakan PHPUnit
+
+```bash
+vendor/bin/phpunit --verbose --coverage-text
+```
+
 # How to contribute
 
-
-* Lakukan Fork pada GitHub
-* Tambahkan fork pada git remote anda
+* Lakukan **FORK** code.
+* Tambahkan **FORK** pada git remote anda
 
 Untuk contoh commandline nya :
 
@@ -327,13 +371,13 @@ Untuk contoh commandline nya :
 git remote add fork git@github.com:$USER/php-bca.git  # Tambahkan fork pada remote, $USER adalah username GitHub anda
 ```
 
-contohnya :
+Misalkan :
 
 ```bash
 git remote add fork git@github.com:johndoe/php-bca.git
 ```
 
-* Buat feature ```branch``` dengan cara
+* Setelah FORK, buat feature ```branch``` baru dengan cara
 
 ```bash
 git checkout -b feature/my-new-feature origin/develop 
@@ -344,7 +388,7 @@ git checkout -b feature/my-new-feature origin/develop
 * Setelah selesai lakukan commit
 
 ```bash
-git commit -am 'Menambahkan fitur xxx'
+git commit -am 'Menambahkan fitur A..B..C..D'
 ```
 
 * Lakukan ```Push``` ke branch yang telah dibuat
